@@ -4,9 +4,11 @@ import com.binance.connector.client.WebSocketStreamClient;
 import com.binance.connector.client.utils.websocketcallback.WebSocketMessageCallback;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import kitty.scalper.adapter.CandleBar;
+import kitty.scalper.config.ScalperConfiguration;
 import kitty.scalper.core.Candle;
-import kitty.scalper.provider.RealtimeProvider;
+import kitty.scalper.provider.CandleProvider;
 import kitty.scalper.provider.binance.response.CandleStickEvent;
+import kitty.scalper.trader.CandleCache;
 import kitty.scalper.util.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,12 +19,15 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Component
-public class BinanceRealtimeProvider implements RealtimeProvider {
+public class BinanceCandleProvider implements CandleProvider {
     private final WebSocketStreamClient client;
+    private final CandleCache cache;
     private Candle temporaryCandle;
 
     @Autowired
-    public BinanceRealtimeProvider(WebSocketStreamClient client) {
+    public BinanceCandleProvider(WebSocketStreamClient client,
+                                 CandleCache cache, ScalperConfiguration configuration) {
+        this.cache = cache;
         this.client = client;
 
         WebSocketMessageCallback messageCallback = (data) -> {
@@ -45,7 +50,13 @@ public class BinanceRealtimeProvider implements RealtimeProvider {
             }
         };
 
-        client.klineStream("btcusdt", "1s", messageCallback);
+        var quotation = configuration.getQuotation();
+        var period = configuration.getScalpingPeriod().toLowerCase();
+
+        var symbol = (quotation.getBaseAsset()
+                + quotation.getQuoteAsset()).toUpperCase();
+
+        client.klineStream(symbol, period, messageCallback);
     }
 
     @Override
@@ -62,6 +73,8 @@ public class BinanceRealtimeProvider implements RealtimeProvider {
 
         var candle = temporaryCandle;
         temporaryCandle = null;
+
+        cache.update(candle);
 
         return candle;
     }

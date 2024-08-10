@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class Exchange {
+public class BinanceExchange {
     @JsonProperty("timezone")
     private final String timezone;
     @JsonProperty("serverTime")
@@ -24,6 +24,32 @@ public class Exchange {
     private final List<Symbol> symbols;
     @JsonProperty("sors")
     private final List<SOR> sors;
+
+    @Getter
+    @RequiredArgsConstructor
+    public class RateLimit {
+        @JsonProperty("rateLimitType")
+        private final String rateLimitType;
+        @JsonProperty("interval")
+        private final String interval;
+        @JsonProperty("intervalNum")
+        private final int intervalNumber;
+        @JsonProperty("limit")
+        private final int limit;
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    public class SOR {
+        @JsonProperty("baseAsset")
+        private final String baseAsset;
+        @JsonProperty("symbols")
+        private final List<String> symbols;
+
+        public List<String> getSymbols() {
+            return Collections.unmodifiableList(symbols);
+        }
+    }
 
     public List<RateLimit> getRateLimits() {
         return Collections.unmodifiableList(rateLimits);

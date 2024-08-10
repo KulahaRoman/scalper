@@ -4,6 +4,7 @@ import com.binance.connector.client.SpotClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import kitty.scalper.adapter.CandleBar;
+import kitty.scalper.config.ScalperConfiguration;
 import kitty.scalper.core.Candle;
 import kitty.scalper.provider.HistoryProvider;
 import kitty.scalper.util.JSON;
@@ -21,17 +22,25 @@ import java.util.List;
 @Component
 public class BinanceHistoryProvider implements HistoryProvider {
     private final SpotClient client;
+    private final ScalperConfiguration configuration;
 
     @Autowired
-    public BinanceHistoryProvider(SpotClient client) {
+    public BinanceHistoryProvider(SpotClient client, ScalperConfiguration configuration) {
         this.client = client;
+        this.configuration = configuration;
     }
 
     @Override
     public List<Candle> getCandleHistory(long size) {
+        var quotation = configuration.getQuotation();
+        var period = configuration.getScalpingPeriod().toLowerCase();
+
+        var symbol = (quotation.getBaseAsset()
+                + quotation.getQuoteAsset()).toUpperCase();
+
         var parameters = new HashMap<String, Object>();
-        parameters.put("symbol", "BTCUSDT");
-        parameters.put("interval", "1s");
+        parameters.put("symbol", symbol);
+        parameters.put("interval", period);
 
         var response = client.createMarket().klines(parameters);
         try {
