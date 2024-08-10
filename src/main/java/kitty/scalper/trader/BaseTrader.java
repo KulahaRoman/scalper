@@ -12,15 +12,20 @@ public class BaseTrader implements Trader {
     private final QuotationProvider quotationProvider;
     private final OrderProvider orderProvider;
     private final OrderProcessor orderProcessor;
+    private final TradeHandler openTradeHandler;
+    private final TradeHandler closeTradeHandler;
     private final TraderState traderState;
 
     @Autowired
     public BaseTrader(BalanceProvider balanceProvider, QuotationProvider quotationProvider,
-                      OrderProvider orderProvider, OrderProcessor orderProcessor, TraderState traderState) {
+                      OrderProvider orderProvider, OrderProcessor orderProcessor,
+                      TradeHandler openTradeHandler, TradeHandler closeTradeHandler, TraderState traderState) {
         this.balanceProvider = balanceProvider;
         this.quotationProvider = quotationProvider;
         this.orderProvider = orderProvider;
         this.orderProcessor = orderProcessor;
+        this.openTradeHandler = openTradeHandler;
+        this.closeTradeHandler = closeTradeHandler;
         this.traderState = traderState;
     }
 
@@ -38,6 +43,8 @@ public class BaseTrader implements Trader {
             trade.setOpenPrice(price);
 
             traderState.setActiveTrade(trade);
+
+            openTradeHandler.handle(trade);
         }
     }
 
@@ -50,11 +57,13 @@ public class BaseTrader implements Trader {
             var order = orderProvider.getSellOrder(quotation, balance, price);
             orderProcessor.processOrder(order);
 
+            traderState.setActiveTrade(null);
+
             var trade = traderState.getActiveTrade();
             trade.setCloseTime(ZonedDateTime.now());
             trade.setClosePrice(price);
 
-            traderState.setActiveTrade(null);
+            closeTradeHandler.handle(trade);
         }
     }
 }
