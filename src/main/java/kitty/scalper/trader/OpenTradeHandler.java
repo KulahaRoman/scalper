@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component;
 public class OpenTradeHandler implements TradeHandler {
     @Override
     public void handle(Trade trade) {
-
+        System.out.println("Opened a trade at price " + trade.getOpenPrice());
     }
 }

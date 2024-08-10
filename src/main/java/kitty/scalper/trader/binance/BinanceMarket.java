@@ -1,8 +1,10 @@
 package kitty.scalper.trader.binance;
 
 import com.binance.connector.client.SpotClient;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kitty.scalper.trader.Market;
 import kitty.scalper.trader.entity.Order;
+import kitty.scalper.util.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +14,12 @@ import java.util.Map;
 @Component
 public class BinanceMarket implements Market {
     private final SpotClient client;
+    private final BinanceStorage storage;
 
     @Autowired
-    public BinanceMarket(SpotClient client) {
+    public BinanceMarket(SpotClient client, BinanceStorage storage) {
         this.client = client;
+        this.storage = storage;
     }
 
     @Override
@@ -37,7 +41,12 @@ public class BinanceMarket implements Market {
         parameters.put("quantity", order.getAmount());
         parameters.put("stopPrice", order.getPrice());
 
-        client.createTrade().testNewOrder(parameters);
+        var response = client.createTrade().testNewOrder(parameters);
+        try {
+            storage.save(JSON.readObject(response, kitty.scalper.trader.binance.response.Order.class));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to parse response.", e);
+        }
     }
 
     private void placeSellOrder(Order order) {
@@ -51,5 +60,6 @@ public class BinanceMarket implements Market {
         parameters.put("quantity", order.getAmount());
 
         client.createTrade().testNewOrder(parameters);
+        storage.clear();
     }
 }
