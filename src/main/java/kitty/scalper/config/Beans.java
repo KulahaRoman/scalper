@@ -19,10 +19,10 @@ import org.springframework.context.annotation.*;
 })
 public class Beans {
     @Bean
-    public SpotClient spotClient(@Value("${kitty.binance.client.api_key}") String apiKey,
-                                 @Value("${kitty.binance.client.secret_key}") String secretKey,
-                                 @Value("${kitty.binance.client.base_url}") String baseURL) {
-        return new SpotClientImpl(apiKey, secretKey, baseURL);
+    public SpotClient spotClient(@Value("${kitty.client.binance.api_key}") String apiKey,
+                                 @Value("${kitty.client.binance.secret_key}") String secretKey,
+                                 @Value("${kitty.client.binance.base_url}") String baseURL) {
+        return new SpotClientImpl(apiKey, secretKey);
     }
 
     @Bean
@@ -31,10 +31,10 @@ public class Beans {
     }
 
     @Bean
-    public WebSocketApiClient webSocketApiClient(@Value("${kitty.binance.client.api_key}") String apiKey,
-                                                 @Value("${kitty.binance.client.secret_key}") String secretKey,
-                                                 @Value("${kitty.binance.client.base_url}") String baseURL) {
+    public WebSocketApiClient webSocketApiClient(@Value("${kitty.client.binance.api_key}") String apiKey,
+                                                 @Value("${kitty.client.binance.secret_key}") String secretKey,
+                                                 @Value("${kitty.client.binance.base_url}") String baseURL) {
         var signatureGenerator = new HmacSignatureGenerator(secretKey);
-        return new WebSocketApiClientImpl(apiKey, signatureGenerator, baseURL);
+        return new WebSocketApiClientImpl(apiKey, signatureGenerator);
     }
 }

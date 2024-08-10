@@ -2,6 +2,7 @@ package kitty.scalper.trader;
 
 import kitty.scalper.core.Trader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
@@ -19,7 +20,8 @@ public class BaseTrader implements Trader {
     @Autowired
     public BaseTrader(BalanceProvider balanceProvider, QuotationProvider quotationProvider,
                       OrderProvider orderProvider, OrderProcessor orderProcessor,
-                      TradeHandler openTradeHandler, TradeHandler closeTradeHandler, TraderState traderState) {
+                      @Qualifier("openTradeHandler") TradeHandler openTradeHandler,
+                      @Qualifier("closeTradeHandler") TradeHandler closeTradeHandler, TraderState traderState) {
         this.balanceProvider = balanceProvider;
         this.quotationProvider = quotationProvider;
         this.orderProvider = orderProvider;

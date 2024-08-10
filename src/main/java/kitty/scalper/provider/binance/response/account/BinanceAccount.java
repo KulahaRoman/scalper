@@ -44,7 +44,7 @@ public class BinanceAccount {
 
     @Getter
     @RequiredArgsConstructor
-    public class CommissionRates {
+    public static class CommissionRates {
         @JsonProperty("maker")
         private final double maker;
         @JsonProperty("taker")
@@ -57,7 +57,7 @@ public class BinanceAccount {
 
     @Getter
     @RequiredArgsConstructor
-    public class Balance {
+    public static class Balance {
         @JsonProperty("asset")
         private final String asset;
         @JsonProperty("free")

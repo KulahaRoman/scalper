@@ -27,7 +27,7 @@ public class BinanceExchange {
 
     @Getter
     @RequiredArgsConstructor
-    public class RateLimit {
+    public static class RateLimit {
         @JsonProperty("rateLimitType")
         private final String rateLimitType;
         @JsonProperty("interval")
@@ -40,7 +40,7 @@ public class BinanceExchange {
 
     @Getter
     @RequiredArgsConstructor
-    public class SOR {
+    public static class SOR {
         @JsonProperty("baseAsset")
         private final String baseAsset;
         @JsonProperty("symbols")

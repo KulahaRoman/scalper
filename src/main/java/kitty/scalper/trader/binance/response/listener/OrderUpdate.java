@@ -105,6 +105,7 @@ public class OrderUpdate extends Update {
         this.selfTradePreventionMode = selfTradePreventionMode;
     }
 
+    @Getter
     public enum ExecutionType {
         NEW("The order has been accepted into the engine."),
         CANCELED("The order has been canceled by the user."),
@@ -118,10 +119,6 @@ public class OrderUpdate extends Update {
 
         ExecutionType(String description) {
             this.description = description;
-        }
-
-        public String getDescription() {
-            return this.description;
         }
     }
 }

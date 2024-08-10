@@ -23,7 +23,7 @@ public class AccountUpdate extends Update {
 
     @Getter
     @RequiredArgsConstructor
-    public class Balance {
+    public static class Balance {
         @JsonProperty("a")
         private final String asset;
         @JsonProperty("f")
