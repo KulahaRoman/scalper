@@ -25,30 +25,34 @@ public class BaseTrader implements Trader {
     }
 
     @Override
-    public void adviceToBuy() {
+    public void adviceToBuy(double price) {
         if (!traderState.hasActiveTrade()) {
             var quotation = quotationProvider.getQuotation();
             var balance = balanceProvider.getBalance(quotation.getQuoteAsset());
 
-            var order = orderProvider.getBuyOrder(quotation, balance);
+            var order = orderProvider.getBuyOrder(quotation, balance, price);
             orderProcessor.processOrder(order);
 
             var trade = new Trade();
             trade.setOpenTime(ZonedDateTime.now());
-            trade.setOpenBalance(balance);
+            trade.setOpenPrice(price);
 
             traderState.setActiveTrade(trade);
         }
     }
 
     @Override
-    public void adviceToSell() {
+    public void adviceToSell(double price) {
         if (traderState.hasActiveTrade()) {
             var quotation = quotationProvider.getQuotation();
             var balance = balanceProvider.getBalance(quotation.getBaseAsset());
 
-            var order = orderProvider.getSellOrder(quotation, balance);
+            var order = orderProvider.getSellOrder(quotation, balance, price);
             orderProcessor.processOrder(order);
+
+            var trade = traderState.getActiveTrade();
+            trade.setCloseTime(ZonedDateTime.now());
+            trade.setClosePrice(price);
 
             traderState.setActiveTrade(null);
         }

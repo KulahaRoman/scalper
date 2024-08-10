@@ -1,7 +1,7 @@
 package kitty.scalper.core;
 
 public interface Trader {
-    void adviceToBuy();
+    void adviceToBuy(double price);
 
-    void adviceToSell();
+    void adviceToSell(double price);
 }

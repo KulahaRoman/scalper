@@ -32,7 +32,7 @@ public class BinanceHistoryProvider implements HistoryProvider {
 
     @Override
     public List<Candle> getCandleHistory(long size) {
-        var quotation = configuration.getQuotation();
+        var quotation = configuration.getScalpingQuotation();
         var period = configuration.getScalpingPeriod().toLowerCase();
 
         var symbol = (quotation.getBaseAsset()

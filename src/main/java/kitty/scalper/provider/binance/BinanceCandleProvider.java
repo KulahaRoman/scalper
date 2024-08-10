@@ -8,7 +8,6 @@ import kitty.scalper.config.ScalperConfiguration;
 import kitty.scalper.core.Candle;
 import kitty.scalper.provider.CandleProvider;
 import kitty.scalper.provider.binance.response.CandleStickEvent;
-import kitty.scalper.trader.CandleCache;
 import kitty.scalper.util.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,13 +20,10 @@ import java.time.ZonedDateTime;
 @Component
 public class BinanceCandleProvider implements CandleProvider {
     private final WebSocketStreamClient client;
-    private final CandleCache cache;
     private Candle temporaryCandle;
 
     @Autowired
-    public BinanceCandleProvider(WebSocketStreamClient client,
-                                 CandleCache cache, ScalperConfiguration configuration) {
-        this.cache = cache;
+    public BinanceCandleProvider(WebSocketStreamClient client, ScalperConfiguration configuration) {
         this.client = client;
 
         WebSocketMessageCallback messageCallback = (data) -> {
@@ -50,7 +46,7 @@ public class BinanceCandleProvider implements CandleProvider {
             }
         };
 
-        var quotation = configuration.getQuotation();
+        var quotation = configuration.getScalpingQuotation();
         var period = configuration.getScalpingPeriod().toLowerCase();
 
         var symbol = (quotation.getBaseAsset()
@@ -73,8 +69,6 @@ public class BinanceCandleProvider implements CandleProvider {
 
         var candle = temporaryCandle;
         temporaryCandle = null;
-
-        cache.update(candle);
 
         return candle;
     }

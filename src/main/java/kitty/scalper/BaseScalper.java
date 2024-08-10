@@ -1,9 +1,9 @@
 package kitty.scalper;
 
-import kitty.scalper.core.CandleSource;
 import kitty.scalper.core.Scalper;
 import kitty.scalper.core.Strategy;
 import kitty.scalper.core.Trader;
+import kitty.scalper.provider.CandleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,15 +11,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 public class BaseScalper implements Scalper {
-    private final CandleSource candleSource;
+    private final CandleProvider candleProvider;
     private final Strategy strategy;
     private final Trader trader;
 
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     @Autowired
-    public BaseScalper(CandleSource candleSource, Strategy strategy, Trader trader) {
-        this.candleSource = candleSource;
+    public BaseScalper(CandleProvider candleProvider, Strategy strategy, Trader trader) {
+        this.candleProvider = candleProvider;
         this.strategy = strategy;
         this.trader = trader;
     }
@@ -29,11 +29,11 @@ public class BaseScalper implements Scalper {
         running.set(true);
 
         while (running.get()) {
-            var candle = candleSource.acquire();
+            var candle = candleProvider.getCandle();
             strategy.getDecision(candle).ifPresent(decision -> {
                 switch (decision) {
-                    case BUY -> trader.adviceToBuy();
-                    case SELL -> trader.adviceToSell();
+                    case BUY -> trader.adviceToBuy(candle.getClosePrice());
+                    case SELL -> trader.adviceToSell(candle.getClosePrice());
                 }
             });
         }

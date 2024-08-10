@@ -1,7 +1,6 @@
 package kitty.scalper.trader.binance;
 
 import com.binance.connector.client.SpotClient;
-import kitty.scalper.trader.CandleCache;
 import kitty.scalper.trader.Market;
 import kitty.scalper.trader.entity.Order;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +12,10 @@ import java.util.Map;
 @Component
 public class BinanceMarket implements Market {
     private final SpotClient client;
-    private final CandleCache cache;
 
     @Autowired
-    public BinanceMarket(SpotClient client, CandleCache cache) {
+    public BinanceMarket(SpotClient client) {
         this.client = client;
-        this.cache = cache;
     }
 
     @Override
@@ -38,7 +35,7 @@ public class BinanceMarket implements Market {
         parameters.put("side", "BUY");
         parameters.put("type", "STOP_LOSS");
         parameters.put("quantity", order.getAmount());
-        parameters.put("stopPrice", cache.retrieve().getClosePrice());
+        parameters.put("stopPrice", order.getPrice());
 
         client.createTrade().testNewOrder(parameters);
     }

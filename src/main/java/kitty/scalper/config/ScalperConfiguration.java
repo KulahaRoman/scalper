@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Component
 public class ScalperConfiguration {
-    private Quotation quotation;
-    private OrderPolicy orderPolicy;
+    private Quotation scalpingQuotation;
     private String scalpingPeriod;
 }

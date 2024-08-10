@@ -16,5 +16,6 @@ public class Order {
 
     private OrderType type;
     private Quotation quotation;
+    private double price;
     private double amount;
 }

@@ -15,6 +15,6 @@ import java.time.ZonedDateTime;
 public class Trade {
     private ZonedDateTime openTime;
     private ZonedDateTime closeTime;
-    private Balance openBalance;
-    private Balance closeBalance;
+    private double openPrice;
+    private double closePrice;
 }

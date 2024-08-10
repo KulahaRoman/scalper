@@ -15,6 +15,6 @@ public class BaseQuotationProvider implements QuotationProvider {
     @Override
     public Quotation getQuotation() {
         // check availabilty of quotation!!!!!!!!!!!!!
-        return configuration.getQuotation();
+        return configuration.getScalpingQuotation();
     }
 }
